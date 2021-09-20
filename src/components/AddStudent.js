@@ -11,7 +11,12 @@ import TextField from '@material-ui/core/TextField';
 class AddStudent extends Component {
       constructor(props) {
       super(props);
-      this.state = {open: false, student:{ } };
+      this.state = {
+        open: false, 
+        student:{email: "", name: ""} 
+      };
+
+      this.handleInputChange = this.handleInputChange.bind(this);
     };
 
     
@@ -23,9 +28,18 @@ class AddStudent extends Component {
       this.setState( {open:false} );
     };
 
-    handleChange = (event) => {
+    handleInputChange = (event) => {
       event.preventDefault();
-      this.setState({student:{email: event.target.value, name: event.target.value}});
+      const target = event.target;
+      const value = target.value;
+      const name = target.name;
+      
+      this.setState({
+        student:{
+          ...this.state.student,
+          [name]: value 
+        }
+      });
     }
 
   // Save course and close modal form
@@ -43,8 +57,8 @@ class AddStudent extends Component {
             <Dialog open={this.state.open} onClose={this.handleClose}>
                 <DialogTitle>Add Student</DialogTitle>
                 <DialogContent>
-                  <TextField autoFocus fullWidth label="Email" name="email" onChange={this.handleChange}/> 
-                  <TextField autoFocus fullWidth label="Name" name="name" onChange={this.handleChange}/> 
+                  <TextField autoFocus fullWidth label="Email" name="email" onChange={this.handleInputChange}/> 
+                  <TextField autoFocus fullWidth label="Name" name="name" onChange={this.handleInputChange}/> 
                 </DialogContent>
                 <DialogActions>
                   <Button color="secondary" onClick={this.handleClose}>Cancel</Button>
