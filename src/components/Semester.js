@@ -93,7 +93,6 @@ class Semester extends Component {
          </AppBar>
          <div align="left" >
               <div style={{ height: 400, width: '100%', align:"left"   }}>
-<<<<<<< HEAD
                 <DataGrid   rows={SEMESTER_LIST} columns={icolumns} />
               </div>                
               <Button component={Link} 
@@ -109,20 +108,6 @@ class Semester extends Component {
                   <AddStudent addStudent={this.addStudent}  />
               </Grid>
             </Grid>
-
-
-=======
-                <DataGrid   rows={SEMESTER_LIST} columns={icolumns} /> 
-                <br/><br/> 
-                <Button component={Link} 
-                        to={{pathname:'/schedule' , 
-                        year:SEMESTER_LIST[this.state.selected].year, 
-                        semester:SEMESTER_LIST[this.state.selected].name}} 
-                  variant="outlined" color="primary" style={{margin: 10}}>
-                  Get Schedule
-                </Button>
-              </div>
->>>>>>> parent of 0178824... removed credentials:'include' from fetch calls for Spring server change
           </div>
       </div>
     )
