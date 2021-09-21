@@ -12,15 +12,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AddCourse from './AddCourse';
 
-// NOTE:  for OAuth security, http request must have
-//   credentials: 'include' 
-//
-
-// properties year, semester required
-//  
-//  NOTE: because SchedList is invoked via <Route> in App.js  
-//  props are accessed via props.location 
-
+// properties location.year and location.semester required
 class SchedList extends Component {
   constructor(props) {
     super(props);
@@ -38,13 +30,12 @@ class SchedList extends Component {
     fetch(`${SERVER_URL}/schedule?year=${this.props.location.year}&semester=${this.props.location.semester}`, 
       {  
         method: 'GET', 
-        headers: { 'X-XSRF-TOKEN': token }
+        headers: { 'X-XSRF-TOKEN': token }, 
+        credentials: 'include'
       } )
-    .then((response) => {
-      console.log("FETCH RESP:"+response);
-      return response.json();}) 
+    .then((response) => response.json()) 
     .then((responseData) => { 
-      // do a sanity check on response
+      console.log("FETCH RESP DATA:"+responseData.courses);
       if (Array.isArray(responseData.courses)) {
         this.setState({ 
           courses: responseData.courses,
@@ -55,23 +46,19 @@ class SchedList extends Component {
         });
       }        
     })
-    .catch(err => {
-      toast.error("Fetch failed.", {
-          position: toast.POSITION.BOTTOM_LEFT
-        });
-        console.error(err); 
-    })
+    .catch(err => console.error(err)); 
   }
 
   // Drop Course 
-  onDelClick = (id) => {
+  onDelClick = (course_id) => {
     if (window.confirm('Are you sure you want to drop the course?')) {
       const token = Cookies.get('XSRF-TOKEN');
       
-      fetch(`${SERVER_URL}/schedule/${id}`,
+      fetch(`${SERVER_URL}/schedule/${course_id}`,
         {
           method: 'DELETE',
-          headers: { 'X-XSRF-TOKEN': token }
+          headers: { 'X-XSRF-TOKEN': token }, 
+          credentials: 'include'
         })
     .then(res => {
         if (res.ok) {
@@ -103,6 +90,7 @@ class SchedList extends Component {
         method: 'POST', 
         headers: { 'Content-Type': 'application/json',
                    'X-XSRF-TOKEN': token  }, 
+        credentials: 'include', 
         body: JSON.stringify(course)
       })
     .then(res => {
@@ -115,7 +103,7 @@ class SchedList extends Component {
           toast.error("Error when adding", {
               position: toast.POSITION.BOTTOM_LEFT
           });
-          console.error('Post http status =' + res.status);
+          console.error('POST http status =' + res.status);
         }})
     .catch(err => {
       toast.error("Error when adding", {
@@ -139,15 +127,15 @@ class SchedList extends Component {
         sortable: false,
         width: 200,
         renderCell: (params) => (
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              style={{ marginLeft: 16 }} 
-              onClick={()=>{this.onDelClick(params.value)}}
-            >
-              Drop
-            </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="small"
+          style={{ marginLeft: 16 }} 
+          onClick={()=>{this.onDelClick(params.value)}}
+        >
+          Drop
+        </Button>
         )
       }
       ];
@@ -177,12 +165,11 @@ class SchedList extends Component {
   }
 }
 
-// required properties:  year integer , semester string
-//  NOTE: because SchedList is invoked via <Route> in App.js  
-//  props are accessed via props.location 
+// required properties:  location.year integer , location.semester string
 SchedList.propTypes = {
   location: (properties, propertyName, componentName) => {
-       if ( (!Number.isInteger(properties.location.year)) || !(typeof properties.location.semester === 'string') || (properties.location.semester instanceof String )) {
+       if ( (!Number.isInteger(properties.location.year)) || !(typeof properties.location.semester === 'string') || (properties.location.semester instanceof String ))
+         {
          return new Error('AddCourse: Missing or invalid property year or semester.');
        }
     }
